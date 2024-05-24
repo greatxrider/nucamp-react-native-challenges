@@ -12,7 +12,6 @@ const DirectoryNavigator = () => {
     return (
         <Stack.Navigator initialRouteName='Directory' screenOptions={{ headerStyle: { backgroundColor: '#5637DD' }, headerTintColor: '#FFF' }}>
             <Stack.Screen name='Directory' component={DirectoryScreen} options={{ title: 'Campsite Directory' }}>
-
             </Stack.Screen>
             <Stack.Screen name='CampsiteInfo' component={CampsiteInfoScreen} options={({ route }) => ({
                 title: route.params.campsite.name
