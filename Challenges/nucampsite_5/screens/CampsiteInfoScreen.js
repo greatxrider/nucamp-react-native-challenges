@@ -6,5 +6,3 @@ const CampsiteInfoScreen = ({ route }) => {
 };
 
 export default CampsiteInfoScreen;
-
-
