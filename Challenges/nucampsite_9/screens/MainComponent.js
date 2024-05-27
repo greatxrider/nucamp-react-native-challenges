@@ -73,7 +73,6 @@ const ContactNavigator = () => {
     )
 }
 
-
 const HomeNavigator = () => {
     const Stack = createStackNavigator();
     return (
