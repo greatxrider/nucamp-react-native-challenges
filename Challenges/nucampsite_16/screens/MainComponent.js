@@ -1,4 +1,12 @@
-import { Platform, View, StyleSheet, Text, Image } from 'react-native';
+import {
+    Image,
+    Platform,
+    StyleSheet,
+    Text,
+    View,
+    Alert,
+    ToastAndroid
+} from 'react-native';
 import Constants from 'expo-constants';
 import CampsiteInfoScreen from './CampsiteInfoScreen';
 import DirectoryScreen from './DirectoryScreen';
@@ -11,6 +19,7 @@ import {
 import HomeScreen from './HomeScreen';
 import AboutScreen from './AboutScreen';
 import ContactScreen from './ContactScreen';
+import ReservationScreen from './ReservationScreen';
 import { Icon } from 'react-native-elements';
 import logo from '../assets/images/logo.png';
 import { useDispatch } from 'react-redux';
@@ -19,10 +28,10 @@ import { fetchPartners } from '../features/partners/partnersSlice';
 import { fetchCampsites } from '../features/campsites/campsitesSlice';
 import { fetchPromotions } from '../features/promotions/promotionsSlice';
 import { fetchComments } from '../features/comments/commentsSlice';
-import ReservationScreen from './ReservationScreen';
 import FavoritesScreen from './FavoritesScreen';
 import LoginScreen from './LoginScreen';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/core';
+import NetInfo from '@react-native-community/netinfo';
 
 const Drawer = createDrawerNavigator();
 
@@ -31,10 +40,33 @@ const screenOptions = {
     headerStyle: { backgroundColor: '#5637DD' }
 };
 
+const HomeNavigator = () => {
+    const Stack = createStackNavigator();
+    return (
+        <Stack.Navigator screenOptions={screenOptions}>
+            <Stack.Screen
+                name='Home'
+                component={HomeScreen}
+                options={({ navigation }) => ({
+                    title: 'Home',
+                    headerLeft: () => (
+                        <Icon
+                            name='home'
+                            type='font-awesome'
+                            iconStyle={styles.stackIcon}
+                            onPress={() => navigation.toggleDrawer()}
+                        />
+                    )
+                })}
+            />
+        </Stack.Navigator>
+    );
+};
+
 const AboutNavigator = () => {
     const Stack = createStackNavigator();
     return (
-        <Stack.Navigator initialRouteName='About' screenOptions={screenOptions}>
+        <Stack.Navigator screenOptions={screenOptions}>
             <Stack.Screen
                 name='About'
                 component={AboutScreen}
@@ -56,7 +88,7 @@ const AboutNavigator = () => {
 const ContactNavigator = () => {
     const Stack = createStackNavigator();
     return (
-        <Stack.Navigator initialRouteName='Contact' screenOptions={screenOptions}>
+        <Stack.Navigator screenOptions={screenOptions}>
             <Stack.Screen
                 name='Contact'
                 component={ContactScreen}
@@ -70,12 +102,11 @@ const ContactNavigator = () => {
                             onPress={() => navigation.toggleDrawer()}
                         />
                     )
-                }
-                )}
+                })}
             />
         </Stack.Navigator>
-    )
-}
+    );
+};
 
 const ReservationNavigator = () => {
     const Stack = createStackNavigator();
@@ -151,29 +182,6 @@ const LoginNavigator = () => {
     );
 };
 
-const HomeNavigator = () => {
-    const Stack = createStackNavigator();
-    return (
-        <Stack.Navigator initialRouteName='Home' screenOptions={screenOptions}>
-            <Stack.Screen
-                name='Home'
-                component={HomeScreen}
-                options={({ navigation }) => ({
-                    title: 'Home',
-                    headerLeft: () => (
-                        <Icon
-                            name='home'
-                            type='font-awesome'
-                            iconStyle={styles.stackIcon}
-                            onPress={() => navigation.toggleDrawer()}
-                        />
-                    )
-                })}
-            />
-        </Stack.Navigator>
-    );
-};
-
 const DirectoryNavigator = () => {
     const Stack = createStackNavigator();
     return (
@@ -223,12 +231,57 @@ const CustomDrawerContent = (props) => (
 
 const Main = () => {
     const dispatch = useDispatch();
+
     useEffect(() => {
         dispatch(fetchCampsites());
         dispatch(fetchPromotions());
         dispatch(fetchPartners());
         dispatch(fetchComments());
     }, [dispatch]);
+
+    useEffect(() => {
+        NetInfo.fetch().then((connectionInfo) => {
+            Platform.OS === 'ios'
+                ? Alert.alert(
+                    'Initial Network Connectivity Type:',
+                    connectionInfo.type
+                )
+                : ToastAndroid.show(
+                    'Initial Network Connectivity Type: ' +
+                    connectionInfo.type,
+                    ToastAndroid.LONG
+                );
+        });
+
+        const unsubscribeNetInfo = NetInfo.addEventListener(
+            (connectionInfo) => {
+                handleConnectivityChange(connectionInfo);
+            }
+        );
+
+        return unsubscribeNetInfo;
+    }, []);
+
+    const handleConnectivityChange = (connectionInfo) => {
+        let connectionMsg = 'You are now connected to an active network.';
+        switch (connectionInfo.type) {
+            case 'none':
+                connectionMsg = 'No network connection is active.';
+                break;
+            case 'unknown':
+                connectionMsg = 'The network connection state is now unknown.';
+                break;
+            case 'cellular':
+                connectionMsg = 'You are now connected to a cellular network.';
+                break;
+            case 'wifi':
+                connectionMsg = 'You are now connected to a WiFi network.';
+                break;
+        }
+        Platform.OS === 'ios'
+            ? Alert.alert('Connection change:', connectionMsg)
+            : ToastAndroid.show(connectionMsg, ToastAndroid.LONG);
+    };
 
     return (
         <View
@@ -240,14 +293,16 @@ const Main = () => {
         >
             <Drawer.Navigator
                 initialRouteName='HomeDrawer'
-                screenOptions={{ drawerStyle: { backgroundColor: '#CEC8FF' } }}
                 drawerContent={CustomDrawerContent}
+                screenOptions={{
+                    headerShown: false,
+                    drawerStyle: { backgroundColor: '#CEC8FF' }
+                }}
             >
                 <Drawer.Screen
-                    name='LoginDrawer'
+                    name='Login'
                     component={LoginNavigator}
                     options={{
-                        title: 'Login',
                         drawerIcon: ({ color }) => (
                             <Icon
                                 name='sign-in'
@@ -260,7 +315,7 @@ const Main = () => {
                     }}
                 />
                 <Drawer.Screen
-                    name='HomeDrawer'
+                    name='Home'
                     component={HomeNavigator}
                     options={{
                         title: 'Home',
@@ -276,7 +331,7 @@ const Main = () => {
                     }}
                 />
                 <Drawer.Screen
-                    name='DirectoryDrawer'
+                    name='Directory'
                     component={DirectoryNavigator}
                     options={{
                         title: 'Campsite Directory',
@@ -324,7 +379,7 @@ const Main = () => {
                     }}
                 />
                 <Drawer.Screen
-                    name='AboutDrawer'
+                    name='About'
                     component={AboutNavigator}
                     options={{
                         title: 'About',
@@ -340,7 +395,7 @@ const Main = () => {
                     }}
                 />
                 <Drawer.Screen
-                    name='ContactDrawer'
+                    name='Contact'
                     component={ContactNavigator}
                     options={{
                         title: 'Contact Us',
@@ -361,11 +416,6 @@ const Main = () => {
 };
 
 const styles = StyleSheet.create({
-    stackIcon: {
-        marginLeft: 10,
-        color: '#fff',
-        fontSize: 24
-    },
     drawerHeader: {
         backgroundColor: '#5637DD',
         height: 140,
@@ -383,7 +433,12 @@ const styles = StyleSheet.create({
         margin: 10,
         height: 60,
         width: 60
+    },
+    stackIcon: {
+        marginLeft: 10,
+        color: '#fff',
+        fontSize: 24
     }
-})
+});
 
 export default Main;

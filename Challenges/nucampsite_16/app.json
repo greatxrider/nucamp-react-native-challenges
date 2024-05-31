@@ -5,6 +5,11 @@
     "version": "1.0.0",
     "plugins": [
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "d661ebf5-4cfe-4910-a0d6-b30f986d7f23"
+      }
+    }
   }
 }
