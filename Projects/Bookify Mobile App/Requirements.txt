@@ -1,0 +1,28 @@
+Week 3 Project
+
+Start coding your Portfolio Project
+Now it is time for you to transform your design into working code using React Native.
+
+Think of how you will convert your design to the actual realization of your project in terms of implementing the code.
+Don't hesitate to make modifications to the design, in response to difficulties that you might encounter while developing the project.
+Plan for the use of components, services, and data structures that you will use in implementing your project.
+
+
+Task
+Publish the link to your online Git repository for your project below, or include a zip file of your project (without the node_modules folder). Optional but encouraged: Include screenshots of what you have accomplished so far. 
+If you are continuing to work on your React Portfolio Project, post your updated code and screenshots here as well. 
+
+
+Week 4 Project 
+
+Continue coding your Portfolio Project
+Add React Native Components to your application, and deploy it to your device or an emulator.
+
+Think of which React Native components and components from other libraries you will leverage and for what effect.
+Don't hesitate to make modifications to the design, in response to difficulties that you might encounter while developing the project.
+Plan for the use of components, services, and data structures that you will use in implementing your project.
+
+
+Task
+In a post to this forum, list the React Native Components and components from other libraries you have added to your app.
+Also in the same post, attach a zip file of your code, or include the URL to an online git repository containing your code. Screenshots of your project UI are optional, but appreciated! Use PNG format for the screenshots, not PDFs, for a smaller file size. 
